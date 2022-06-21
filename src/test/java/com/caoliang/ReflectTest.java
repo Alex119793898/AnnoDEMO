@@ -13,7 +13,8 @@ public class ReflectTest {
         SQLProvider sqlProvider = new SQLProvider();
 
         //String sql = sqlProvider.genDeleteSql(orderInfo);
-        String sql = sqlProvider.genUpdateSql(orderInfo);
+        //String sql = sqlProvider.genUpdateSql(orderInfo);
+        String sql = sqlProvider.genQuerySql(orderInfo);
 
 
         System.out.println(sql);
