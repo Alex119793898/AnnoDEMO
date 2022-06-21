@@ -8,10 +8,14 @@ public class ReflectTest {
 
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setOrderId("10001");
-        //orderInfo.setClientName("客户1");
+        orderInfo.setClientName("客户1");
 
         SQLProvider sqlProvider = new SQLProvider();
-        String sql = sqlProvider.genDeleteSql(orderInfo);
+
+        //String sql = sqlProvider.genDeleteSql(orderInfo);
+        String sql = sqlProvider.genUpdateSql(orderInfo);
+
+
         System.out.println(sql);
     }
 }

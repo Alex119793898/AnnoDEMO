@@ -13,11 +13,54 @@ public class SQLProvider {
     public String genQuerySql(OrderInfo orderInfo){
         return "";
     }
-    public String genUpdateSql(OrderInfo orderInfo){
-        return "";
+
+    // update table set xxx=xxx, xxx=xxx where pk = xxx
+    public String genUpdateSql(OrderInfo orderInfo) throws Exception{
+
+        StringBuffer sql = new StringBuffer("UPDATE ");
+        StringBuffer setSql = new StringBuffer(" SET ");
+        StringBuffer whereSql = new StringBuffer();
+
+        Class<? extends OrderInfo> clazz = orderInfo.getClass();
+        Table tableAnno = clazz.getAnnotation(Table.class);
+
+        for (Field field : clazz.getDeclaredFields()) {
+            ColumnAnno columnAnno = field.getAnnotation(ColumnAnno.class);
+
+            String getterName = "get" + field.getName().substring(0,1).toUpperCase() + field.getName().substring(1);
+            Object fieldValue = orderInfo.getClass().getMethod(getterName).invoke(orderInfo);
+
+            if(null == columnAnno || StringUtils.isEmpty(fieldValue)){
+                continue;
+            }
+
+
+            //类型转换
+            if(field.getType() == String.class){
+                fieldValue = "'" + fieldValue + "'";
+            }else if (field.getType() == int.class || field.getType() == Integer.class){
+                //....
+            }
+
+            if(StringUtils.isEmpty(columnAnno.isPK())){
+                setSql.append(columnAnno.columnName()).append(" = ").append(fieldValue).append(",");
+            }
+
+
+            if(!StringUtils.isEmpty(columnAnno.isPK()) && StringUtils.isEmpty(whereSql.toString())){
+                if(null == fieldValue){
+                    throw new Exception("主键列不能为空");
+                }
+
+                whereSql.append(" WHERE ").append(columnAnno.columnName()).append(" = ").append(fieldValue);
+            }
+        }
+
+        sql.append(tableAnno.tableName()).append(setSql.substring(0,setSql.length()-1)).append(whereSql);
+        return sql.toString();
     }
 
-    // delete from table where xxx = xxx
+    // delete from table where pk = xxx
     public String genDeleteSql(OrderInfo orderInfo) throws Exception {
 
         StringBuffer sql = new StringBuffer("delete from ");
@@ -35,6 +78,13 @@ public class SQLProvider {
 
                 if(null == fieldValue){
                     throw new Exception("主键列不能为空");
+                }
+
+                //类型转换
+                if(field.getType() == String.class){
+                    fieldValue = "'" + fieldValue + "'";
+                }else if (field.getType() == int.class || field.getType() == Integer.class){
+                    //....
                 }
 
                 whereSql.append(" WHERE ").append(columnAnno.columnName()).append(" = ").append(fieldValue);
