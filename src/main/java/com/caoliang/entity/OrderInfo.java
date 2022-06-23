@@ -52,4 +52,14 @@ public class OrderInfo {
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
     }
+
+    @Override
+    public String toString() {
+        return "OrderInfo{" +
+                "orderId='" + orderId + '\'' +
+                ", clientName='" + clientName + '\'' +
+                ", productName='" + productName + '\'' +
+                ", orderDate=" + orderDate +
+                '}';
+    }
 }
